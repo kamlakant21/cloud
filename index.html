@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.1/css/bootstrap.min.css"
+        integrity="sha384-VCmXjywReHh4PwowAiWNagnWcLhlEJLA5buUprzK8rxFgeH0kww/aWY76TfkUoSX" crossorigin="anonymous">
+    <title>Secure Travel App</title>
+    <link rel="icon" type="image/svg" href="assets/virus.svg">
+    <link rel="stylesheet" href="styles/style.css">
+    </style>
+</head>
+
+<body>
+    <div class="jumbotron jumbotron-fluid"
+        style="background-image: url(https://scx2.b-cdn.net/gfx/news/hires/2020/covid.jpg); color:white">
+        <div class="container">
+            <h1 class="text-center">
+                <strong><i class="fa fa-newspaper-o"></i> Secure Travel App</strong>
+            </h1>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row" id="search-nav">
+            <div class="col-lrg-12"></div>
+            <nav class="navbar navbar-light">
+                <form class="form-inline">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                </form>
+            </nav>
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-3 mt-3">
+                <!-- Total Confirmed Cases -->
+                <div class="card" style="height: 40rem;">
+                    <div id="total-cases-div" class="card-body">
+                        <h5 id="total-world-confirmed" class="card-title">Total Cases</h5>
+                        <hr>
+                        <div id="total-cases-country"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 mt-3">
+                <!-- Map display -->
+                <div class="border border-dark" id="world-map-container">
+                    <svg id="world_map_svg"></svg>
+                    <div class="container pr-3 pl-3">
+                        <h2 class="m-0 p-0" id="title">US Coronavirus statistics in the United States</h2>
+                        <div class="m-0 p-0" id="description">Number of confirmed cases world wide</div>
+                        <div class="m-0" id="tooltip-world">--</div>
+                    </div>
+                </div>
+                <div class="border border-dark" id="us-map-container">
+                    <svg id="us_map_svg"></svg>
+                    <div class="container pr-3 pl-3 ">
+                        <h2 class="m-0 p-0" id="title">US Coronavirus statistics in the United States</h2>
+                        <p class="p-0 m-0" id="description">Number of confirmed cases per state</p>
+                        <div class="m-0" id="tooltip">--</div>
+                    </div>
+                </div>
+                <div class="btn-group btn-group-toggle mt-3" data-toggle="buttons">
+                    <label class="btn btn-primary active" id="click-world">
+                        <input type="radio" name="options" id="option1" autocomplete="off" checked> World Map
+                    </label>
+                    <label class="btn btn-primary" id="click-usa">
+                        <input type="radio" name="options" id="option2" autocomplete="off"> USA Map
+                    </label>
+                    <label class="btn btn-danger" id="toggle-bubbles">
+                        <input type="radio" name="options" id="option3" autocomplete="off"> Toggle bubbles
+                    </label>
+                </div>
+            </div>
+            <div class="col-12 col-sm-3 mt-3">
+                <!-- Total Confirmed Deaths-->
+                <div class="card" style="height: 40rem;">
+                    <div class="card-body">
+                        <h5 id="total-world-deaths" class="card-title" style="color: black;">Total Deaths</h5>
+                        <hr>
+                        <div id="total-deaths"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- News Carousel -->
+        <div id="carouselExampleControls" class="carousel slide mt-3 mb-3" data-ride="carousel">
+            <div class="carousel-inner" id="news-carousel-inner">
+                <!-- News cards will be inserted here by news.js-->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Hotel Listings</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="hotel-modal-close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="hotel-modal">
+                    <div class="spinner-border text-primary loader" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="card w-100" id="hotel-card-1">
+                        <img src="" class="card-img-top" id="hotel-card-1-img" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title" id="hotel-card-1-title"></h5>
+                            <p class="card-text" id="hotel-card-1-text">Some quick example text to build on the card
+                                title and make up the bulk
+                                of the card's content.</p>
+                            <a href="https://www.tripadvisor.com/" target="_blank" class="btn btn-primary hotel-buttons">Book Now</a>
+                        </div>
+                    </div>
+                    <div class="card w-100" id="hotel-card-2">
+                        <img src="" class="card-img-top" id="hotel-card-2-img" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title" id="hotel-card-2-title"></h5>
+                            <p class="card-text" id="hotel-card-2-text">Some quick example text to build on the card
+                                title and make up the bulk
+                                of the card's content.</p>
+                            <a href="https://www.tripadvisor.com/" target="_blank" class="btn btn-primary hotel-buttons">Book Now</a>
+                        </div>
+                    </div>
+                    <div class="card w-100" id="hotel-card-3">
+                        <img src="" class="card-img-top" id="hotel-card-3-img" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title" id="hotel-card-3-title"></h5>
+                            <p class="card-text" id="hotel-card-3-text">Some quick example text to build on the card
+                                title and make up the bulk
+                                of the card's content.</p>
+                            <a href="https://www.tripadvisor.com/" target="_blank" class="btn btn-primary hotel-buttons">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="modal-close" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.1/js/bootstrap.min.js"
+        integrity="sha384-XEerZL0cuoUbHE4nZReLT7nx9gQrQreJekYhJD9WNWhH8nEW+0c5qq7aIo2Wl30J"
+        crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"
+        integrity="sha512-4UKI/XKm3xrvJ6pZS5oTRvIQGIzZFoXR71rRBb1y2N+PbwAsKa5tPl2J6WvbEvwN3TxQCm8hMzsl/pO+82iRlg=="
+        crossorigin="anonymous"></script>
+    <script src="scripts/script.js"></script>
+    <script src="scripts/worldmap.js"></script>
+    <script src="scripts/usmap.js"></script>
+    <script src="scripts/news.js"></script>
+    <script src="scripts/modal.js"></script>
+
+    <!-- To make carousel draggable -->
+    <script src='//cdnjs.cloudflare.com/ajax/libs/jquery.touchswipe/1.6.4/jquery.touchSwipe.min.js'></script>
+    <script type="text/javascript">
+        jQuery(".carousel").swipe({
+            swipe: function (event, direction, distance, duration, fingerCount, fingerData) {
+                if (direction == 'left') jQuery(this).carousel('next');
+                if (direction == 'right') jQuery(this).carousel('prev');
+            },
+            allowPageScroll: "vertical"
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+#total-cases-country {
+  /* background: red; */
+  overflow: auto;
+  height: 90%;
+}
+
+.total-number {
+  color: red;
+  font-weight: 700;
+}
+.total-number-country,
+.total-number-state {
+  color: green;
+}
+
+#total-deaths {
+  overflow: auto;
+  height: 90%;
+}
+
+.border-dark {
+  border-color: #343a40 !important;
+  background: white;
+}
+
+#world-map-container {
+  width: 100%;
+  height: 500px;
+}
+
+#us-map-container {
+  width: 100%;
+  display: none;
+  max-height: 500px;
+}
+
+#tooltip {
+  visibility: hidden;
+  height: auto;
+  width: auto;
+}
+
+#tooltip-world {
+  visibility: hidden;
+  height: auto;
+  width: auto;
+
+}
+
+#search-nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+
+/* loader */
+.loader {
+  width: 80px;
+  height: 80px;
+  margin-left:auto;
+  margin-right:auto;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  display: block;
+  
+}
+
+#hotel-card-1 {
+    display: none;
+}
+#hotel-card-2 {
+    display: none;
+}
+#hotel-card-3 {
+    display: none;
+}
+
+
+
+@media (max-width: 991px) {
+  [class*= row] {
+    width: 100%;
+    }
+
+}
+
+
+
+  @media (min-width: 350px) and (max-width: 767px) {
+    [class*=col-6] {
+      display: none;
+    }
+  }
+
+  
+@media (min-width: 768px) {
+  #search-nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+  
+}
+@media (max-width: 414px) {
+
+  #search-nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+
+
+}
+

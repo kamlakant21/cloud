@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #tooltip {
+            visibility: hidden;
+            height: auto;
+            width: auto;
+        }
+
+        .big-container {
+            border-style: solid;
+            border-width: 2px;
+            border-color: black;
+            width: 60%;
+        }
+
+        #us-map-container {
+            width: 100%;
+            /* transform: scale(0.5); */
+        }
+
+        #world-map-container {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="big-container">
+
+        <div id="world-map-container">
+            <svg id="world_map_svg" width="1000px" height="600"></svg>
+        </div>
+        <div id="us-map-container">
+            <h2 id="title">US Coronavirus statistics in the United States</h2>
+            <div id="description">Number of confirmed cases per state</div>
+            <div id="tooltip"></div>
+            <svg id="us_map_svg" width="1000px" height="600"></svg>
+        </div>
+    </div>
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.1/js/bootstrap.min.js"
+        integrity="sha384-XEerZL0cuoUbHE4nZReLT7nx9gQrQreJekYhJD9WNWhH8nEW+0c5qq7aIo2Wl30J"
+        crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"
+        integrity="sha512-4UKI/XKm3xrvJ6pZS5oTRvIQGIzZFoXR71rRBb1y2N+PbwAsKa5tPl2J6WvbEvwN3TxQCm8hMzsl/pO+82iRlg=="
+        crossorigin="anonymous"></script>
+    <script>
+        // Generate the US Map
+        $.getJSON("https://coronavirus-us-api.p.rapidapi.com/api/state/all?source=nyt&rapidapi-key=73403c6c67msha0632541172766bp194ccejsn820ec377a86a", function (data) {
+            var fillColor; // to hold fill color for hover
+            // console.log(data);
+            let covidData = data.locations;
+            jsonData = []
+            // {fips: 1011, state: "AL", area_name: "Bullock County", bachelorsOrHigher: 14.1}
+            let educationURL = 'https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/for_user_education.json';
+            let educationData
+            let tooltip = d3.select('#tooltip')
+
+            // The svg
+            var svg = d3.select("#us_map_svg"),
+                width = +svg.attr("width"),
+                height = +svg.attr("height");
+
+            svg.call(responsivefy);
+
+            // Map and projection
+            var projection = d3.geoMercator()
+                .center([0, 20])                // GPS of location to zoom on
+                .scale(99)                       // This is like the zoom
+                .translate([width / 2, height / 2])
+
+            d3.queue()
+                .defer(d3.json, "https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/counties.json")  // World shape
+                .defer(d3.json, educationURL)
+                .await(ready);
+
+            function ready(error, data, eduData) {
+                console.log(data)
+                // console.log(eduData)
+                console.log(covidData)
+
+                dataGeo = topojson.feature(data, data.objects.states).features;
+
+                // Draw the world map
+                svg.append("g")
+                    .selectAll("path")
+                    .data(dataGeo)
+                    .enter()
+                    .append("path")
+                    .style("stroke", "white")
+                    .attr('d', d3.geoPath()) // method that converts geometry into string given to svg 
+                    .attr('class', 'county')
+                    // Add a fill color based on the number of covid cases
+                    .attr('fill', (dataGeoItem) => {
+                        let id = dataGeoItem.id // get state id
+
+                        let state = covidData.find((item) => { // like a for loop, searches each item to see if it matches id
+                            return item['fips'] === id;
+                        })
+
+                        let confirmed = state.latest.confirmed;
+                        // return color based on number of cases
+                        if (confirmed <= 1000) {
+                            return '#fadbd8'
+                        } else if (confirmed <= 10000) {
+                            return '#f1948a'
+                        } else if (confirmed <= 100000) {
+                            return '#e74c3c'
+                        } else {
+                            return '#b03a2e'
+                        }
+                    })
+                    .attr('data-fips', (dataGeoItem) => {
+                        return dataGeoItem.id
+                    })
+                    .attr('data-cases', (dataGeoItem) => { // set attribute to number of cases per state
+                        let id = dataGeoItem.id // get state id
+                        let state = covidData.find((item) => {
+                            return item['fips'] === id;
+                        })
+                        let cases = state.latest.confirmed;
+                        return cases;
+                    })
+                    .attr('data-state', (dataGeoItem) => { // set attribute to the state
+                        let id = dataGeoItem.id // get state id
+                        let state = covidData.find((item) => {
+                            return item['fips'] === id;
+                        })
+                        let foundState = state['state'];
+                        return foundState;
+                    })
+                    .on('mouseover', (dataGeoItem) => {
+                        fillColor = d3.event.target.attributes[2].nodeValue;
+                        d3.event.target.attributes[2].nodeValue = '#f4d03f'
+                        tooltip.transition()
+                            .style('visibility', 'visible')
+                        let id = dataGeoItem.id; // get county id
+                        let state = covidData.find((item) => {
+                            return item['fips'] === id;
+                        })
+                        tooltip.text(state['fips'] + ' - ' + state['state'] + ' : ' + state.latest.confirmed)
+                    })
+                    .on('mouseout', (countyDataItem) => {
+                        d3.event.target.attributes[2].nodeValue = fillColor;
+                        tooltip.transition()
+                            .style('visibility', 'hidden');
+                    })
+
+                svg.append("rect").attr("x", 825).attr("y", 400).attr("width", 40).attr("height", 40).style("fill", "#fadbd8")
+                svg.append("rect").attr("x", 825).attr("y", 440).attr("width", 40).attr("height", 40).style("fill", "#f1948a")
+                svg.append("rect").attr("x", 825).attr("y", 480).attr("width", 40).attr("height", 40).style("fill", "#e74c3c")
+                svg.append("rect").attr("x", 825).attr("y", 520).attr("width", 40).attr("height", 40).style("fill", "#b03a2e")
+                svg.append("text").attr("x", 875).attr("y", 420).text("<= 1,000 cases").style("font-size", "16px").attr("alignment-baseline", "middle")
+                svg.append("text").attr("x", 875).attr("y", 460).text("<= 10,000 cases").style("font-size", "16px").attr("alignment-baseline", "middle")
+                svg.append("text").attr("x", 875).attr("y", 500).text("<= 100,000 cases").style("font-size", "16px").attr("alignment-baseline", "middle")
+                svg.append("text").attr("x", 875).attr("y", 540).text("<= 1,000,000 cases").style("font-size", "16px").attr("alignment-baseline", "middle")
+
+
+            }
+        });
+
+        function responsivefy(svg) {
+            // get container + svg aspect ratio
+            var container = d3.select(svg.node().parentNode),
+                width = parseInt(svg.style("width")),
+                height = parseInt(svg.style("height")),
+                aspect = width / height;
+
+            // add viewBox and preserveAspectRatio properties,
+            // and call resize so that svg resizes on inital page load
+            svg.attr("viewBox", "0 0 " + width + " " + height)
+                .attr("perserveAspectRatio", "xMinYMid")
+                .call(resize);
+
+            // to register multiple listeners for same event type, 
+            // you need to add namespace, i.e., 'click.foo'
+            // necessary if you call invoke this function for multiple svgs
+            // api docs: https://github.com/mbostock/d3/wiki/Selections#on
+            d3.select(window).on("resize." + container.attr("id"), resize);
+
+            // get width of container and resize svg to fit it
+            function resize() {
+                var targetWidth = parseInt(container.style("width"));
+                svg.attr("width", targetWidth);
+                svg.attr("height", Math.round(targetWidth / aspect));
+            }
+        }
+    </script>
+</body>
+
+</html>
